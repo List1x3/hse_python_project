@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мой сайт</title>
+    <link rel="stylesheet" href="{{ url_for('static',filename='static/main.css') }}">
+</head>
+<body>
+    <div class="head-absolute">
+        <div class="head-with-settings">
+            <div class="account-icon"><img src="user-profile-circle-user-account-data-login-symbol-blackandwhite-line-art-png-clipart.jpg"></div>
+            <div class="settings-icon"><img src="Windows_Settings_app_icon.png"></div>
+        </div>
+    </div> 
+    <div class="main-body">
+        <div class="game-tittle">КРЕСТИКИ-НОЛИКИ</div>
+        <div><button class="button-multy" onclick="window.location.href='{{ url_for('play_game') }}'">ИГРА ВДВОЕМ</button></div>
+        <div><button class="button-bot">ИГРА С БОТОМ</button></div>
+    </div>
+    <script src="{{ url_for('static', filename='main/main.js') }}">
+    </script>
+    
+</body>
+</html>

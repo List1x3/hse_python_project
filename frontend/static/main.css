@@ -1,0 +1,94 @@
+.head-with-settings {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    align-items: center;
+    width: 600px;
+    height: 60px;
+    justify-self: center;
+    align-self: center;
+    
+}
+.head-absolute{
+    background-color: #007500;
+    height:70px;
+    padding: 5px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+body{
+    background-color: #99FF99;
+    margin: 0; padding: 0;
+}
+@font-face {
+    font-family: funky;
+    src: url(CCRFBZSR.ttf);
+}
+.account-icon{
+    height: 50px;
+    width: 50px;
+}
+.account-icon img{
+    height: 100%;
+    width: 100%;
+}
+.settings-icon{
+    height: 50px;
+    width: 50px;
+}
+.settings-icon img{
+    height: 100%;
+    width: 100%;
+}
+.main-body{
+    justify-self: center;
+    width: 620px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    gap: 30px;
+    align-items: center;
+    min-height: 80vh;
+
+}
+.game-tittle{
+    font-family: funky;
+    color: white;
+    display: flex;
+    font-size: 55px;
+    justify-self: center;
+
+}
+
+
+.button-bot{
+    min-width: 400px;
+    background-color: #2E7D32;
+    font-size: 40px;
+    min-height: 70px;
+    border-radius: 10px;
+    border: 2px solid #333;
+    color: white;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    align-self: center;
+}
+
+.button-multy{
+    background-color: #2E7D32;
+    min-height: 70px;
+    min-width: 400px;
+    border-radius: 10px;
+    color: white;
+    border: 2px solid #333;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    align-self: center;
+    font-size: 40px;
+}
+.button-multy:hover{
+    background-color: #007500;
+}
+.button-bot:hover{
+    background-color: #007500;
+}
