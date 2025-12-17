@@ -3,13 +3,15 @@
     justify-content: space-between;
     flex-direction: row;
     align-items: center;
-    width: 600px;
+    min-width: 600px;
     height: 60px;
     justify-self: center;
     align-self: center;
     
 }
+
 .head-absolute{
+    width: 99%;
     background-color: #007500;
     height:70px;
     padding: 5px;
@@ -19,6 +21,8 @@
 body{
     background-color: #99FF99;
     margin: 0; padding: 0;
+    height: 100%;
+    width: 100%;
 }
 @font-face {
     font-family: funky;
@@ -61,6 +65,7 @@ body{
 }
 
 
+
 .button-bot{
     min-width: 400px;
     background-color: #2E7D32;
@@ -92,3 +97,109 @@ body{
 .button-bot:hover{
     background-color: #007500;
 }
+@media (320px <= width <= 435px){
+    .chose-one-1{
+        display:none;
+    }
+    .head-with-settings {
+        min-width: 70%;
+    }
+    .game-tittle{
+        font-family: funky;
+        color: white;
+        display: flex;
+        font-size: 30px;
+        justify-self: center;
+
+    }
+    .button-multy{
+        min-width: 100px;
+        width: 200px;
+        min-height: 70px;
+    }
+    .button-bot{
+        min-width: 100px;
+        min-height: 70px;
+        width: 200px;
+    }
+}
+
+.choose_size{
+    display: flex;
+    flex-direction: row;
+    max-width: 400px;
+    justify-content: space-between;
+    font-size: 70px;
+
+}
+.chose-one-1{
+    height: 80px;
+    width: 80px;
+    background-color: white;
+    margin-right: 5px;
+    margin-left: 5px;
+    text-align: center;
+    border: 2px solid #333;
+
+}
+.chose-one-2{
+    height: 80px;
+    width: 80px;
+    background-color: white;
+    margin-right: 5px;
+    margin-left: 5px;
+    text-align: center;
+    border: 2px solid #333;
+
+}
+.buts{
+    min-height:80px;
+    display:flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.but-up{
+    width: 80px;
+    height: 35px;
+    background-color:white;
+    border: 2px solid #333;
+    font-size: 25px;
+    text-align:center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+.but-down{
+    width: 80px;
+    height: 35px;
+    background-color:white;
+    border: 2px solid #333;
+    font-size: 25px;
+    text-align:center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.but-up:hover{
+    background-color:grey;
+}
+
+.but-down:hover{
+    background-color: grey;
+}
+
+
+@media (435px <= width <= 600px) {
+    .head-with-settings {
+        min-width: 70%;
+    }
+    .game-tittle{
+        font-family: funky;
+        color: white;
+        display: flex;
+        font-size: 30px;
+        justify-self: center;
+
+    }
+}
+

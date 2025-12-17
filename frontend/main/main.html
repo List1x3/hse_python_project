@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Мой сайт</title>
     <link rel="stylesheet" href="{{ url_for('static',filename='static/main.css') }}">
+    <script>
+        window.AppConfig = {
+            urls: {
+                game: "{{ url_for('play_game', n='N') }}"
+            }
+        };
+    </script>
 </head>
 <body>
     <div class="head-absolute">
@@ -15,10 +22,29 @@
     </div> 
     <div class="main-body">
         <div class="game-tittle">КРЕСТИКИ-НОЛИКИ</div>
-        <div><button class="button-multy" onclick="window.location.href='{{ url_for('play_game') }}'">ИГРА ВДВОЕМ</button></div>
+        <div class="choose_size">
+            <div class="chose-one-1">
+                5
+            </div>
+            X
+            <div class="chose-one-2">
+                5
+            </div>
+            <div class="buts">
+                <div class="but-up" onclick="addone()">
+                    /\
+                </div>
+                <div class="but-down" onclick="remone()">
+                    \/
+                </div>
+            </div>
+        </div>
+
+        <div><button class="button-multy" onclick="go_to_game()">ИГРА ВДВОЕМ</button></div>
         <div><button class="button-bot">ИГРА С БОТОМ</button></div>
     </div>
     <script src="{{ url_for('static', filename='main/main.js') }}">
+
     </script>
     
 </body>

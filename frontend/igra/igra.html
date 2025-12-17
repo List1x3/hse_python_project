@@ -5,19 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Сетка 3x3</title>
     <link rel="stylesheet" href="{{ url_for('static',filename='static/igra.css') }}">
+    <script>
+        window.pageData = {
+            n_znach: {{ N }}
+        };
+    </script>
 </head>
 <body>
+    <div class="head-absolute"></div>
+    <h1>Сетка</h1>
+
+    <div class="board" id="board">
+
+    </div>
     <div class="winscreen">
         <div class="winblock">
             <div class="wintext">ПОБЕДА<br>X</div>
             <button class="go_back" onclick="window.location.href='{{ url_for('mains') }}'">ОК</button>
         </div>
-
-    </div>
-    <div class="head-absolute"></div>
-    <h1>Сетка</h1>
-    <div class="board" id="board">
-
     </div>
     <button class="submit">ПОДТВЕРДИТЬ</button>
     <script src="{{ url_for('static', filename='igra/igra.js') }}"></script>

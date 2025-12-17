@@ -181,7 +181,7 @@ function finish_hod(){
         sp[nowx][nowy] = now;
         buttons.style.display = 'none';
         if(check_if_win(nowx, nowy, now) == true){
-            wintext.textContent = "ПОБЕДА<br>" + nowzn;
+            wintext.textContent = "ПОБЕДА " + nowzn;
             color_all_squares();
             final_showdown();
             // setTimeout(final_showdown(), 300 + 300 * sp.length);
@@ -222,7 +222,16 @@ function return_to_menu(){
 function init() {
     
     winscreen.style.display = 'none';
-    n = 3;
+    n = window.pageData.n_znach;
+    if(3 <= n && n <= 5){
+        rows = 3;
+    }
+    else if(n >= 6 && n <= 8){
+        rows = 4;
+    }
+    else{
+        rows = 5;
+    }
     left_zones = n * n;
     rows = 3; 
     now = 1;
