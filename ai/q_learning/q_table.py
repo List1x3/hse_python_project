@@ -3,48 +3,48 @@ import os
 import pickle
 import numpy as np
 from typing import Dict, List, Tuple
-from config.paths import get_model_path
+from pathlib import Path
 
 class QTable:
     def __init__(self, size: int, win_len: int, lr: float = 0.1, 
                  gamma: float = 0.9, init_val: float = 0.0):
-        self.size = size          # размер доски
-        self.win_len = win_len    # длина для победы
-        self.lr = lr              # скорость обучения
-        self.gamma = gamma        # коэффициент дисконтирования
-        self.init_val = init_val  # начальное значение
-        self.table: Dict[str, Dict[int, float]] = {}  # Q-таблица
-        self.visits: Dict[str, int] = {}              # счетчик посещений
+        self.size = size
+        self.win_len = win_len
+        self.lr = lr
+        self.gamma = gamma
+        self.init_val = init_val
+        self.table: Dict[str, Dict[int, float]] = {}
+        self.visits: Dict[str, int] = {}
     
     def get_key(self, board: np.ndarray, symbol: str) -> str:
-        # преобразует доску в строковый ключ
+        # ключ состояния
         board_str = ''.join(str(cell) for row in board for cell in row)
         return f"{board_str}_{symbol}"
     
     def action_to_int(self, action: Tuple[int, int]) -> int:
-        row, col = action
-        return row * self.size + col  # линейный индекс
+        r, c = action
+        return r * self.size + c
     
     def int_to_action(self, key: int) -> Tuple[int, int]:
-        row = key // self.size    # обратное преобразование
-        col = key % self.size
-        return (row, col)
+        r = key // self.size
+        c = key % self.size
+        return (r, c)
     
     def get_q(self, state: str, action: int) -> float:
-        # получает Q-значение для состояния и действия
+        # получить Q-значение
         if state not in self.table:
             return self.init_val
         return self.table[state].get(action, self.init_val)
     
     def update(self, state: str, action: int, reward: float, 
                next_state: str, next_actions: List[int]) -> None:
-        # обновляет Q-значение по формуле
+        # обновить Q-значение
         cur_q = self.get_q(state, action)
         
         if next_actions:
             max_next = max(self.get_q(next_state, a) for a in next_actions)
         else:
-            max_next = 0  # конечное состояние
+            max_next = 0
         
         new_q = cur_q + self.lr * (reward + self.gamma * max_next - cur_q)
         
@@ -56,7 +56,7 @@ class QTable:
     
     def best_action(self, state: str, actions: List[int], 
                    eps: float = 0.0) -> Tuple[int, float]:
-        # выбирает лучшее действие (epsilon-greedy)
+        # лучший ход (epsilon-greedy)
         if not actions:
             return None, 0.0
             
@@ -79,8 +79,16 @@ class QTable:
         
         return best_act, best_val
     
+    def _get_model_path(self, name: str) -> str:
+        # путь к файлу модели
+        cur_dir = Path(__file__).parent
+        proj_root = cur_dir.parent.parent.parent
+        mdl_dir = proj_root / "ai" / "models" / "q_learning"
+        mdl_dir.mkdir(parents=True, exist_ok=True)
+        return str(mdl_dir / f"{name}.pkl")
+    
     def save(self, name: str = None) -> str:
-        # сохраняет таблицу в файл
+        # сохранить таблицу
         if name is None:
             name = f"q_{self.size}x{self.size}_win{self.win_len}"
         
@@ -94,7 +102,7 @@ class QTable:
             'init_val': self.init_val
         }
         
-        path = get_model_path(f"q_learning/{name}.pkl")
+        path = self._get_model_path(name)
         
         with open(path, 'wb') as f:
             pickle.dump(data, f)
@@ -102,9 +110,9 @@ class QTable:
         return path
     
     def load(self, name: str) -> bool:
-        # загружает таблицу из файла
+        # загрузить таблицу
         try:
-            path = get_model_path(f"q_learning/{name}.pkl")
+            path = self._get_model_path(name)
             
             if not os.path.exists(path):
                 return False
@@ -124,7 +132,7 @@ class QTable:
             return False
     
     def stats(self) -> Dict:
-        # возвращает статистику таблицы
+        # статистика таблицы
         total_states = len(self.table)
         total_acts = sum(len(acts) for acts in self.table.values())
         
