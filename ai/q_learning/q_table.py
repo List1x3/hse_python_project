@@ -1,104 +1,173 @@
+import json
+import os
 import pickle
 import numpy as np
-from typing import Dict, List
+from typing import Dict, List, Tuple
+from config.paths import get_model_path
 
 class QTable:
-    # хранит q значения для состояний игры
+    def __init__(self, size: int, win_len: int, lr: float = 0.1, 
+                 gamma: float = 0.9, init_val: float = 0.0):
+        self.size = size
+        self.win_len = win_len
+        self.lr = lr
+        self.gamma = gamma
+        self.init_val = init_val
+        self.table: Dict[str, Dict[int, float]] = {}
+        self.visits: Dict[str, int] = {}
     
-    def __init__(self, board_size=3, lr=0.1, gamma=0.9):
-        self.size = board_size
-        self.table: Dict[str, List[float]] = {}  # q таблица
-        self.lr = lr  # скорость обучения
-        self.gamma = gamma  # кэффициент награды
-        self.cache = {}  # кэш состояний
-
-    def norm_state(self, state_str: str) -> str:
-        # Приводит состояние к стандартному виду
-        if state_str in self.cache:
-            return self.cache[state_str]
-
-        n = self.size
-        matrix = [list(state_str[i * n:(i + 1) * n]) for i in range(n)]
-
-        # Все повороты и отражения
-        all_states = []
-        for _ in range(4):
-            all_states.append(matrix)
-            matrix = [list(row) for row in zip(*matrix[::-1])]
-
-        # Минимальная строка
-        min_str = None
-        for m in all_states:
-            s = ''.join([''.join(row) for row in m])
-            if min_str is None or s < min_str:
-                min_str = s
-
-        self.cache[state_str] = min_str
-        return min_str
-
-    def get_key(self, state: str, player: str) -> str:
-        # Ключ для состояния
-        return f"{self.size}_{self.norm_state(state)}_{player}"
-
-    def get_q(self, key: str) -> List[float]:
-        # q значения для состояния
-        if key not in self.table:
-            self.table[key] = [0.0] * (self.size * self.size)
-        return self.table[key]
-
-    def best_move(self, key: str, moves: List[int], eps=0.0) -> int:
-        # Лучший ход или случайный с вероятностью eps
-        q_vals = self.get_q(key)
-        valid_q = [(i, q_vals[i]) for i in moves]
-
-        if np.random.random() < eps:
-            return np.random.choice(moves) if moves else -1
-
-        # Лучший по q
-        if valid_q:
-            best = max(valid_q, key=lambda x: x[1])
-            same = [m for m, q in valid_q if abs(q - best[1]) < 0.001]
-            return np.random.choice(same) if len(same) > 1 else best[0]
-
-        return -1
-
-    def update(self, key: str, action: int, reward: float, next_key: str, done: bool):
-        # обновляет q таблицу
-        q_vals = self.get_q(key)
-        current = q_vals[action]
-
-        if done:
-            target = reward
+    def get_key(self, board: np.ndarray, symbol: str) -> str:
+        # доска в виде строки + символ игрока
+        board_str = ''.join(str(cell) for row in board for cell in row)
+        return f"{board_str}_{symbol}"
+    
+    def action_to_int(self, action: Tuple[int, int]) -> int:
+        row, col = action
+        return row * self.size + col
+    
+    def int_to_action(self, key: int) -> Tuple[int, int]:
+        row = key // self.size
+        col = key % self.size
+        return (row, col)
+    
+    def get_q(self, state: str, action: int) -> float:
+        if state not in self.table:
+            return self.init_val
+        return self.table[state].get(action, self.init_val)
+    
+    def get_all_q(self, state: str) -> Dict[int, float]:
+        if state not in self.table:
+            return {}
+        return self.table[state].copy()
+    
+    def update(self, state: str, action: int, reward: float, 
+               next_state: str, next_actions: List[int]) -> None:
+        # текущее Q значение
+        cur_q = self.get_q(state, action)
+        
+        # максимальное Q для следующего состояния
+        if next_actions:
+            max_next = max(self.get_q(next_state, a) for a in next_actions)
         else:
-            next_q = self.get_q(next_key)
-            max_next = max(next_q) if next_q else 0
-            target = reward + self.gamma * max_next
-
-        # Формула q-learning
-        q_vals[action] = current + self.lr * (target - current)
-        self.table[key] = q_vals
-
-    def save(self, path: str):
-        # сохраняет таблицу
+            max_next = 0
+        
+        # формула Q-learning
+        new_q = cur_q + self.lr * (reward + self.gamma * max_next - cur_q)
+        
+        # обновление таблицы
+        if state not in self.table:
+            self.table[state] = {}
+        self.table[state][action] = new_q
+        
+        # счетчик посещений
+        self.visits[state] = self.visits.get(state, 0) + 1
+    
+    def best_action(self, state: str, actions: List[int], 
+                   eps: float = 0.0) -> Tuple[int, float]:
+        if not actions:
+            return None, 0.0
+            
+        # случайное исследование
+        if np.random.random() < eps:
+            act = np.random.choice(actions)
+            val = self.get_q(state, act)
+            return act, val
+        
+        # жадный выбор
+        best_act = None
+        best_val = -float('inf')
+        
+        for act in actions:
+            val = self.get_q(state, act)
+            if val > best_val:
+                best_val = val
+                best_act = act
+        
+        # если все значения равны начальным
+        if best_act is None or best_val == self.init_val:
+            best_act = np.random.choice(actions)
+            best_val = self.get_q(state, best_act)
+        
+        return best_act, best_val
+    
+    def save(self, name: str = None) -> str:
+        if name is None:
+            name = f"q_{self.size}x{self.size}_win{self.win_len}"
+        
+        data = {
+            'size': self.size,
+            'win_len': self.win_len,
+            'table': self.table,
+            'visits': self.visits,
+            'lr': self.lr,
+            'gamma': self.gamma,
+            'init_val': self.init_val
+        }
+        
+        path = get_model_path(f"q_learning/{name}.pkl")
+        
         with open(path, 'wb') as f:
-            pickle.dump({
-                'size': self.size,
-                'table': self.table,
-                'lr': self.lr,
-                'gamma': self.gamma,
-                'cache': self.cache
-            }, f)
-
-    def load(self, path: str):
-        # загружает таблицу
-        with open(path, 'rb') as f:
-            data = pickle.load(f)
-            self.size = data['size']
-            self.table = data['table']
-            self.lr = data.get('lr', 0.1)
-            self.gamma = data.get('gamma', 0.9)
-            self.cache = data.get('cache', {})
-
-    def size(self) -> int:
-        # количество состояний
-        return len(self.table)
+            pickle.dump(data, f)
+        
+        # метаданные
+        meta = {
+            'size': self.size,
+            'win_len': self.win_len,
+            'states': len(self.table),
+            'lr': self.lr,
+            'gamma': self.gamma,
+            'total_visits': sum(self.visits.values())
+        }
+        
+        meta_path = get_model_path(f"q_learning/{name}_meta.json")
+        with open(meta_path, 'w') as f:
+            json.dump(meta, f, indent=2)
+        
+        return path
+    
+    def load(self, name: str) -> bool:
+        try:
+            path = get_model_path(f"q_learning/{name}.pkl")
+            
+            if not os.path.exists(path):
+                return False
+            
+            with open(path, 'rb') as f:
+                data = pickle.load(f)
+            
+            # проверка совместимости
+            if data['size'] != self.size or data['win_len'] != self.win_len:
+                print(f"Внимание: параметры модели не совпадают")
+            
+            self.table = data.get('table', {})
+            self.visits = data.get('visits', {})
+            self.lr = data.get('lr', self.lr)
+            self.gamma = data.get('gamma', self.gamma)
+            self.init_val = data.get('init_val', self.init_val)
+            
+            print(f"Загружена таблица: {len(self.table)} состояний")
+            return True
+            
+        except Exception as e:
+            print(f"Ошибка загрузки: {e}")
+            return False
+    
+    def stats(self) -> Dict:
+        total_states = len(self.table)
+        total_acts = sum(len(acts) for acts in self.table.values())
+        total_vis = sum(self.visits.values())
+        
+        avg_acts = total_acts / total_states if total_states > 0 else 0
+        
+        return {
+            'states': total_states,
+            'actions': total_acts,
+            'visits': total_vis,
+            'avg_acts': avg_acts,
+            'size': self.size,
+            'win_len': self.win_len
+        }
+    
+    def clear(self) -> None:
+        self.table.clear()
+        self.visits.clear()
