@@ -1,0 +1,128 @@
+.board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    max-width: 500px;
+    width: 400px;
+    margin: 20px auto;
+    padding: 20px;
+    border: 2px solid #333;
+    border-radius: 10px;
+    background-color: #f0f0f0;
+}
+.submit{
+    display: none;
+    height: 100px;
+    width: 540px;
+    border-radius: 10px;
+    border: 2px solid #333;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    align-self: center;
+}
+
+
+
+.head-absolute{
+    background-color: #007500;
+    height:70px;
+    padding: 5px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.winscreen{
+    opacity: 0;
+}
+
+@keyframes fadeOut {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.fade-out-animation {
+    animation: fadeOut 1s ease forwards;
+}
+
+.go_back{
+    font-size: 30px;
+}
+
+.winblock{
+    margin-right:auto;
+    margin-left: auto;
+
+}
+
+.wintext{
+    font-size:60px;
+    border: 2px solid #333;
+    padding: 10px;
+    border-radius: 10px;
+    border-color: white;
+}
+
+.go_back{
+    margin-top: 10px;
+    border-width: 0px;
+    background-color: #2E7D32;
+    border-radius: 10px;
+    min-width: 300px;
+    min-height: 100px;
+    color: white;
+
+
+}
+
+.go_back:hover{
+    background-color: #007500;
+}
+
+.square {
+    aspect-ratio: 1;
+    background-color: #4CAF50;
+    border: 2px solid #2E7D32;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.square:hover {
+    background-color: #45a049;
+    transform: scale(1.05);
+}
+
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f5f5f5;
+    display: flex;
+    flex-direction: column;
+    margin: 0px;
+}
+
+.submit:hover{
+    background-color: gray;
+    transform: scale(1.05);
+}
+@media (320px <= width <= 435px){
+    .board{
+        width: 250px;
+    }
+    .submit{
+        width: 300px;
+    }
+    .wintext{
+        font-size: 30px;
+    }
+    .go_back{
+        width: 240px;
+    }
+
+}

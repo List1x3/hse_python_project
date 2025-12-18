@@ -8,7 +8,8 @@
     <script>
         window.AppConfig = {
             urls: {
-                game: "{{ url_for('play_game', n='N') }}"
+                game: "{{ url_for('play_game', n='N') }}",
+                game_bot: "{{ url_for('play_game_bot', n='N') }}"
             }
         };
     </script>
@@ -41,7 +42,7 @@
         </div>
 
         <div><button class="button-multy" onclick="go_to_game()">ИГРА ВДВОЕМ</button></div>
-        <div><button class="button-bot">ИГРА С БОТОМ</button></div>
+        <div><button class="button-bot" onclick="go_to_game_bot()">ИГРА С БОТОМ</button></div>
     </div>
     <script src="{{ url_for('static', filename='main/main.js') }}">
 

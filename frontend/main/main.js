@@ -10,6 +10,12 @@ function go_to_game(){
     window.location.href=d;
 }
 
+function go_to_game_bot(){
+    const d = AppConfig.urls.game_bot.replace('N', n);
+    window.location.href=d;
+}
+
+
 function addone(){
     n ++;
     f1.textContent = n;
