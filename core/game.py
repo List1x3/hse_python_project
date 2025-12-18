@@ -46,3 +46,7 @@ class Game:
             self.cur_player = self.players[next_sym]
         
         return True
+        
+    def is_game_over(self) -> bool:
+        # Проверить, закончилась ли игра
+        return self.state != GameState.PLAYING
