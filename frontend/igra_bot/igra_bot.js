@@ -7,7 +7,7 @@ var nowy = -1;
 var nowzn = "X";
 var now_color = "#FF5722";
 var left_zones = 0;
-var rows = 3;
+var rows;
 var n = 3;
 var buttons = document.querySelector('.submit');
 var gameon = 1;
@@ -262,11 +262,9 @@ function init() {
         rows = 5;
     }
     left_zones = n * n;
-    rows = 3;
     now = 1;
     nowx = -1;
     nowy = -1;
-
     sp = [];
     for(let i = 0; i < n; i++){
         sp.push([]);
