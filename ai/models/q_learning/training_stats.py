@@ -28,10 +28,10 @@ def train_all():
     
     for sz in range(3, 9):
         tm = TrainManager(size=sz, sym='O')
-        tm.train_vs_random(eps=cfg[sz]['eps'], save_every=cfg[sz]['save'])
+        tm.train_vs_random(eps=cfg[sz]['eps'] + 1000, save_every=cfg[sz]['save'])
         
         tm = TrainManager(size=sz, sym='X')
-        tm.train_vs_random(eps=cfg[sz]['eps'], save_every=cfg[sz]['save'])
+        tm.train_vs_random(eps=cfg[sz]['eps'] + 1000, save_every=cfg[sz]['save'])
     
     end = time.time()
     return {'time': end - start}
