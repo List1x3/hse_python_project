@@ -223,10 +223,13 @@ function init() {
     
     winscreen.style.display = 'none';
     n = window.pageData.n_znach;
-    if(3 <= n && n <= 5){
+    if(n == 3){
         rows = 3;
     }
-    else if(n >= 6 && n <= 8){
+    else if(n == 4){
+        rows = 4;
+    }
+    else if(n == 5){
         rows = 4;
     }
     else{

@@ -26,7 +26,7 @@ cfg = {
 def train_all():
     start = time.time()
     
-    for sz in range(3, 16):
+    for sz in range(3, 9):
         tm = TrainManager(size=sz, sym='O')
         tm.train_vs_random(eps=cfg[sz]['eps'], save_every=cfg[sz]['save'])
         
