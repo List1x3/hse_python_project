@@ -56,7 +56,7 @@ class QTable:
     
     def best_action(self, state: str, actions: List[int], 
                    eps: float = 0.0) -> Tuple[int, float]:
-        # лучший ход (epsilon-greedy)
+        # выбрать лучший ход
         if not actions:
             return None, 0.0
             
@@ -80,9 +80,9 @@ class QTable:
         return best_act, best_val
     
     def _get_model_path(self, name: str) -> str:
-        # путь к файлу модели
-        cur_dir = Path(__file__).parent
-        proj_root = cur_dir.parent.parent.parent
+        # путь к файлу модели - ИСПРАВЛЕНО
+        cur_dir = Path(__file__).parent  # ai/q_learning/
+        proj_root = cur_dir.parent.parent  # project_root/
         mdl_dir = proj_root / "ai" / "models" / "q_learning"
         mdl_dir.mkdir(parents=True, exist_ok=True)
         return str(mdl_dir / f"{name}.pkl")
@@ -107,6 +107,7 @@ class QTable:
         with open(path, 'wb') as f:
             pickle.dump(data, f)
         
+        print(f"Сохранено: {name} -> {path}")
         return path
     
     def load(self, name: str) -> bool:
@@ -115,6 +116,7 @@ class QTable:
             path = self._get_model_path(name)
             
             if not os.path.exists(path):
+                print(f"Файл не найден: {path}")
                 return False
             
             with open(path, 'rb') as f:
@@ -126,13 +128,15 @@ class QTable:
             self.gamma = data.get('gamma', self.gamma)
             self.init_val = data.get('init_val', self.init_val)
             
+            print(f"Загружено: {name}, состояний: {len(self.table)}")
             return True
             
-        except Exception:
+        except Exception as e:
+            print(f"Ошибка загрузки {name}: {e}")
             return False
     
     def stats(self) -> Dict:
-        # статистика таблицы
+        # получить статистику
         total_states = len(self.table)
         total_acts = sum(len(acts) for acts in self.table.values())
         
