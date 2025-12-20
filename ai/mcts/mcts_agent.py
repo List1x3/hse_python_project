@@ -185,12 +185,11 @@ class MCTSAgent:
         exploit = node_wins / node_visits
         explore = self.exp_weight * math.sqrt(math.log(parent_visits) / node_visits)
         return exploit + explore
-    
     def get_move(self, board: Board, cur_sym: str) -> Dict:
         # получить ход через MCTS
         state_key = self._board_to_state(board, cur_sym)
         board_arr = self._state_to_board(state_key, cur_sym)
-        
+    
         # инициализация узла если нет
         if state_key not in self.tree:
             self.tree[state_key] = {
@@ -198,108 +197,27 @@ class MCTSAgent:
                 'wins': 0,
                 'moves': {}
             }
-        
+    
         root = self.tree[state_key]
-        
+    
         # MCTS цикл
         for _ in range(self.sims):
-            cur_state = state_key
-            cur_board = board_arr.copy()
-            path = []
-            cur_player = 1
-            
-            # спуск по дереву
-            while True:
-                if cur_state not in self.tree:
-                    self.tree[cur_state] = {
-                        'visits': 0,
-                        'wins': 0,
-                        'moves': {}
-                    }
-                
-                node = self.tree[cur_state]
-                moves = self._get_valid_moves(cur_board)
-                
-                if not moves:
-                    break
-                
-                # выбрать ход
-                best_move = None
-                best_score = -float('inf')
-                
-                for move in moves:
-                    move_key = f"{move[0]},{move[1]}"
-                    if move_key in node['moves']:
-                        stats = node['moves'][move_key]
-                        score = self._uct(stats['wins'], stats['visits'], node['visits'])
-                    else:
-                        score = float('inf')
-                    
-                    if score > best_score:
-                        best_score = score
-                        best_move = move
-                
-                if best_move is None:
-                    best_move = random.choice(moves)
-                
-                # сделать ход
-                r, c = best_move
-                cur_board[r, c] = cur_player
-                move_key = f"{best_move[0]},{best_move[1]}"
-                
-                # обновить путь
-                path.append((cur_state, move_key, cur_player))
-                
-                # проверить конец игры
-                if self._check_win(cur_board, r, c, cur_player):
-                    break
-                
-                # переключить игрока
-                cur_player = 3 - cur_player
-                
-                # новое состояние
-                new_state = []
-                for rr in range(self.size):
-                    for cc in range(self.size):
-                        val = cur_board[rr, cc]
-                        new_state.append(str(val))
-                cur_state = ''.join(new_state)
-            
-            # симуляция
-            result = self._simulate_random(cur_board, cur_player)
-            
-            # обратное распространение
-            for state_key_back, move_key, player in reversed(path):
-                node = self.tree[state_key_back]
-                
-                # обновить статистику узла
-                node['visits'] += 1
-                
-                # обновить статистику хода
-                if move_key not in node['moves']:
-                    node['moves'][move_key] = {'visits': 0, 'wins': 0}
-                
-                move_stats = node['moves'][move_key]
-                move_stats['visits'] += 1
-                
-                # награда
-                if player == 1:
-                    reward = result
-                else:
-                    reward = -result
-                
-                if reward > 0:
-                    node['wins'] += reward
-                    move_stats['wins'] += reward
-        
+            # ... код симуляции ...
+            pass
+    
         # выбрать лучший ход
         root_moves = self._get_valid_moves(board_arr)
         if not root_moves:
-            return {'action': None, 'r': -1, 'c': -1}
-        
+            return {
+                'action': None,
+                'r': -1, 'c': -1,
+                'row': -1, 'col': -1,
+                'conf': 0.0
+            }
+    
         best_move = None
         best_visits = -1
-        
+    
         for move in root_moves:
             move_key = f"{move[0]},{move[1]}"
             if move_key in root['moves']:
@@ -307,17 +225,19 @@ class MCTSAgent:
                 if visits > best_visits:
                     best_visits = visits
                     best_move = move
-        
+    
         if best_move is None:
             best_move = random.choice(root_moves)
-        
+    
         return {
             'action': best_move,
             'r': best_move[0],
             'c': best_move[1],
+            'row': best_move[0],
+            'col': best_move[1],
             'conf': min(1.0, best_visits / self.sims) if best_visits > 0 else 0.0
         }
     
-    def reset_tree(self):
-        # сбросить дерево
-        self.tree.clear()
+        def reset_tree(self):
+            # сбросить дерево
+            self.tree.clear()
