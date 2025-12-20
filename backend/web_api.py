@@ -215,8 +215,8 @@ def prepare_models():
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
-@app.route('/ai/mcts_move', methods=['POST'])
-def mcts_move
+@bp.route('/ai/mcts_move', methods=['POST'])
+def mcts_move():
     data = request.json
     
     # проверка данных
