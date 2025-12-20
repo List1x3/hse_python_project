@@ -31,7 +31,7 @@ class MCTSAgent:
         return ''.join(state)
     
     def _state_to_board(self, state: str, cur_sym: str) -> np.ndarray:
-        # строка в numpy массив
+        # строка в массив
         arr = np.zeros((self.size, self.size), dtype=int)
         opp = 'X' if cur_sym == 'O' else 'O'
         
