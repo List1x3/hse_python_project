@@ -92,7 +92,7 @@ class MCTSAgent:
         if cnt >= self.win_len:
             return True
         
-        # диагональ /
+        # диагональ
         cnt = 1
         # вверх-влево
         for i in range(1, self.win_len):
@@ -113,7 +113,7 @@ class MCTSAgent:
         if cnt >= self.win_len:
             return True
         
-        # диагональ \
+        # диагональ
         cnt = 1
         # вверх-вправо
         for i in range(1, self.win_len):
@@ -154,14 +154,13 @@ class MCTSAgent:
                 return 0  # ничья
             
             # проверить победу
-            # (упрощенная проверка, не оптимизированная)
             board_full = True
             for r in range(self.size):
                 for c in range(self.size):
                     if temp_board[r, c] != 0:
                         # проверить победу для этой клетки
                         if self._check_win(temp_board, r, c, temp_board[r, c]):
-                            # кто победил?
+                            # кто победил
                             return 1 if temp_board[r, c] == 1 else -1
                     else:
                         board_full = False
@@ -172,7 +171,7 @@ class MCTSAgent:
             # сделать случайный ход
             r, c = random.choice(moves)
             temp_board[r, c] = player
-            player = 3 - player  # переключить 1<->2
+            player = 3 - player  # переключить 1 2
     
     def _expand_node(self, state: str, board_arr: np.ndarray) -> List[Tuple[int, int]]:
         # расширить узел
@@ -204,11 +203,10 @@ class MCTSAgent:
         
         # MCTS цикл
         for _ in range(self.sims):
-            # селекция
             cur_state = state_key
             cur_board = board_arr.copy()
             path = []
-            cur_player = 1  # 1 - cur_sym, 2 - противник
+            cur_player = 1
             
             # спуск по дереву
             while True:
@@ -285,7 +283,7 @@ class MCTSAgent:
                 move_stats['visits'] += 1
                 
                 # награда
-                if player == 1:  # cur_sym
+                if player == 1:
                     reward = result
                 else:
                     reward = -result
