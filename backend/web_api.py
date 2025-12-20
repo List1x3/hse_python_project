@@ -214,7 +214,7 @@ def prepare_models():
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
-@app.route('/ai/mcts_move', methods=['POST'])
+@bp.route('/ai/mcts_move', methods=['POST'])
 def mcts_move():
     data = request.json
     size = data['size']
@@ -224,7 +224,8 @@ def mcts_move():
         size=size,
         win_len=win_len(size),
         sym=symbol,
-        sims=1000  - ставим точность
+        #   - ставим точность
+        sims=1000
     )
     
     # Получить ход
