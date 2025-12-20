@@ -145,9 +145,12 @@ def ai_move():
         info = agent.get_move(board_obj, symbol)
 
         if info['action']:
+            # ГАРАНТИРУЕМ наличие row и col
             return jsonify({
-                'row': info['r'],
-                'col': info['c'],
+                'row': info['r'],  # фронтенд использует row
+                'col': info['c'],  # фронтенд использует col
+                'r': info['r'],    # для совместимости
+                'c': info['c'],    # для совместимости
                 'confidence': info['conf'],
                 'q_value': info['val']
             })
@@ -161,7 +164,13 @@ def ai_move():
 
     if moves:
         move = random.choice(moves)
-        return jsonify({'row': move[0], 'col': move[1], 'confidence': 0.0})
+        return jsonify({
+            'row': move[0],
+            'col': move[1],
+            'r': move[0],
+            'c': move[1],
+            'confidence': 0.0
+        })
 
     return jsonify({'error': 'нет ходов'}), 400
 
@@ -215,8 +224,9 @@ def prepare_models():
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
-@bp.route('/ai/mcts_move', methods=['POST'])
-def mcts_move():
+
+@bp.route('/ai/mcts_move', methods=['POST'])  # ИСПРАВЛЕНО: добавил @bp.route
+def mcts_move():  # ИСПРАВЛЕНО: добавил скобки
     data = request.json
     
     # проверка данных
@@ -262,15 +272,21 @@ def mcts_move():
     # ход
     move_info = agent.get_move(board, symbol)
     
-    if move_info and move_info.get('action'):
-        response = {
-            'row': move_info.get('row', move_info.get('r', -1)),
-            'col': move_info.get('col', move_info.get('c', -1)),
-            'r': move_info.get('r', -1),
-            'c': move_info.get('c', -1),
-            'conf': move_info.get('conf', 0.0)
-        }
-        return jsonify(response)
+    # Проверяем, что получили корректный ход
+    if move_info:
+        # ИСПРАВЛЕНО: проверяем наличие координат разными способами
+        row = move_info.get('row') or move_info.get('r')
+        col = move_info.get('col') or move_info.get('c')
+        
+        if row is not None and col is not None:
+            response = {
+                'row': row,
+                'col': col,
+                'r': row,
+                'c': col,
+                'conf': move_info.get('conf', 0.0)
+            }
+            return jsonify(response)
     
     # резервный случайный ход
     moves = []
@@ -290,10 +306,3 @@ def mcts_move():
         })
     
     return jsonify({'err': 'нет ходов'}), 400
-# if __name__ == '__main__':
-#     # автоматически подготовить модели при запуске
-#     print("Запуск веб-сервера...")
-#     print("Подготовка моделей...")
-#     prepare_models_for_web()
-#
-#     app.run(debug=True, host='0.0.0.0', port=5000)
