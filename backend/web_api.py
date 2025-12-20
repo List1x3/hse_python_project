@@ -215,25 +215,81 @@ def prepare_models():
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
-@bp.route('/ai/mcts_move', methods=['POST'])
-def mcts_move():
+@app.route('/ai/mcts_move', methods=['POST'])
+def mcts_move
     data = request.json
-    size = data['size']
-    board_state = data['board']
-    symbol = data['symbol']
+    
+    # проверка данных
+    if not data:
+        return jsonify({'err': 'нет данных'}), 400
+    
+    board_state = data.get('board')
+    size = data.get('size')
+    symbol = data.get('symbol')
+    
+    # валидация
+    if not board_state or not size or not symbol:
+        return jsonify({'err': 'нужны board, size, symbol'}), 400
+    
+    if size < 3 or size > 15:
+        return jsonify({'err': 'size от 3 до 15'}), 400
+    
+    if symbol not in ['X', 'O']:
+        return jsonify({'err': 'symbol X или O'}), 400
+    
+    wl = win_len(size)
+    
+    # агент
     agent = MCTSAgent(
         size=size,
-        win_len=win_len(size),
+        win_len=wl,
         sym=symbol,
-        #   - ставим точность
-        sims=1000
+        sims=1000  # точность
     )
     
-    # Получить ход
-    board = Board(size, win_len(size))
+    # создать доску
+    board = Board(size, wl)
     
-    move = agent.get_move(board, symbol)
-    return jsonify({'r': move['r'], 'c': move['c']})
+    # заполнить доску
+    for r in range(size):
+        for c in range(size):
+            cell = board_state[r][c]
+            if cell == 'X':
+                board.move(r, c, 'X')
+            elif cell == 'O':
+                board.move(r, c, 'O')
+    
+    # ход
+    move_info = agent.get_move(board, symbol)
+    
+    if move_info and move_info.get('action'):
+        response = {
+            'row': move_info.get('row', move_info.get('r', -1)),
+            'col': move_info.get('col', move_info.get('c', -1)),
+            'r': move_info.get('r', -1),
+            'c': move_info.get('c', -1),
+            'conf': move_info.get('conf', 0.0)
+        }
+        return jsonify(response)
+    
+    # резервный случайный ход
+    moves = []
+    for r in range(size):
+        for c in range(size):
+            if board_state[r][c] == ' ':
+                moves.append((r, c))
+    
+    if moves:
+        mv = random.choice(moves)
+        return jsonify({
+            'row': mv[0],
+            'col': mv[1],
+            'r': mv[0],
+            'c': mv[1],
+            'conf': 0.0
+        })
+    
+    return jsonify({'err': 'нет ходов'}), 400
 # if __name__ == '__main__':
 #     # автоматически подготовить модели при запуске
 #     print("Запуск веб-сервера...")
