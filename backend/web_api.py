@@ -214,7 +214,24 @@ def prepare_models():
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
-
+@app.route('/ai/mcts_move', methods=['POST'])
+def mcts_move():
+    data = request.json
+    size = data['size']
+    board_state = data['board']
+    symbol = data['symbol']
+    agent = MCTSAgent(
+        size=size,
+        win_len=win_len(size),
+        sym=symbol,
+        sims=1000  - ставим точность
+    )
+    
+    # Получить ход
+    board = Board(size, win_len(size))
+    
+    move = agent.get_move(board, symbol)
+    return jsonify({'r': move['r'], 'c': move['c']})
 # if __name__ == '__main__':
 #     # автоматически подготовить модели при запуске
 #     print("Запуск веб-сервера...")
