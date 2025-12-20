@@ -225,8 +225,8 @@ def prepare_models():
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
 
-@bp.route('/ai/mcts_move', methods=['POST'])  # ИСПРАВЛЕНО: добавил @bp.route
-def mcts_move():  # ИСПРАВЛЕНО: добавил скобки
+@bp.route('/ai/mcts_move', methods=['POST'])
+def mcts_move():
     data = request.json
     
     # проверка данных
@@ -271,10 +271,8 @@ def mcts_move():  # ИСПРАВЛЕНО: добавил скобки
     
     # ход
     move_info = agent.get_move(board, symbol)
-    
-    # Проверяем, что получили корректный ход
+
     if move_info:
-        # ИСПРАВЛЕНО: проверяем наличие координат разными способами
         row = move_info.get('row') or move_info.get('r')
         col = move_info.get('col') or move_info.get('c')
         
