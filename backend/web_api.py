@@ -145,12 +145,11 @@ def ai_move():
         info = agent.get_move(board_obj, symbol)
 
         if info['action']:
-            # ГАРАНТИРУЕМ наличие row и col
             return jsonify({
-                'row': info['r'],  # фронтенд использует row
-                'col': info['c'],  # фронтенд использует col
-                'r': info['r'],    # для совместимости
-                'c': info['c'],    # для совместимости
+                'row': info['r'], 
+                'col': info['c'], 
+                'r': info['r'],
+                'c': info['c'],
                 'confidence': info['conf'],
                 'q_value': info['val']
             })
