@@ -9,7 +9,8 @@
         window.AppConfig = {
             urls: {
                 game: "{{ url_for('play_game', n='N') }}",
-                game_bot: "{{ url_for('play_game_bot', n='N') }}"
+                game_bot: "{{ url_for('play_game_bot', n='N') }}",
+                game_bot_mcts: "{{ url_for('play_game_bot_mcts', n='N') }}"
             }
         };
     </script>
@@ -17,8 +18,6 @@
 <body>
     <div class="head-absolute">
         <div class="head-with-settings">
-            <div class="account-icon"><img src="user-profile-circle-user-account-data-login-symbol-blackandwhite-line-art-png-clipart.jpg"></div>
-            <div class="settings-icon"><img src="Windows_Settings_app_icon.png"></div>
         </div>
     </div> 
     <div class="main-body">

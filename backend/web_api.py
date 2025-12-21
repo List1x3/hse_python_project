@@ -254,7 +254,7 @@ def mcts_move():
         size=size,
         win_len=wl,
         sym=symbol,
-        sims=1000  # точность
+        sims=1500  # точность
     )
     
     # создать доску

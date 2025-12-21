@@ -1,6 +1,6 @@
 .board {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr));
     gap: 10px;
     max-width: 500px;
     width: 400px;
@@ -9,6 +9,7 @@
     border: 2px solid #333;
     border-radius: 10px;
     background-color: #f0f0f0;
+    aspect-ratio: 1;
 }
 .submit{
     display: none;
@@ -114,6 +115,12 @@ body {
 @media (320px <= width <= 435px){
     .board{
         width: 250px;
+        height: 250px;
+        gap: 3px;
+        padding: 5px;
+    }
+    .square{
+        font-size: 10px;
     }
     .submit{
         width: 300px;

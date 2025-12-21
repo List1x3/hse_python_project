@@ -31,4 +31,12 @@ def play_game_bot(n):
         return render_template('igra_bot/igra_bot.html', N=n)
 
 
+@app.route('/game_bot_mcts/<n>', methods=['GET', 'POST'])
+def play_game_bot_mcts(n):
+    if request.method == 'POST':
+        pass
+    else:
+        return render_template('igra_bot_mcts/igra_bot_mcts.html', N=n)
+
+
 app.run(debug=True)

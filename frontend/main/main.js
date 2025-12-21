@@ -11,8 +11,15 @@ function go_to_game(){
 }
 
 function go_to_game_bot(){
-    const d = AppConfig.urls.game_bot.replace('N', n);
-    window.location.href=d;
+    if (n < 5){
+        const d = AppConfig.urls.game_bot.replace('N', n);
+        window.location.href=d;
+    }
+    else{
+        const d = AppConfig.urls.game_bot_mcts.replace('N', n);
+        window.location.href=d;
+    }
+
 }
 
 

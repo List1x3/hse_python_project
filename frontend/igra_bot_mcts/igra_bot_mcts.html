@@ -4,16 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Сетка 3x3</title>
-    <link rel="stylesheet" href="{{ url_for('static',filename='static/igra.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static',filename='static/igra_bot_mcts.css') }}">
     <script>
         window.pageData = {
-            n_znach: {{ N }}
+            n_znach: {{ N }},
+            next_move: '{{ url_for('api.mcts_move') }}'
         };
     </script>
 </head>
 <body>
     <div class="head-absolute"></div>
-    <h1>Ход X</h1>
+    <h1>Ваш Ход</h1>
 
     <div class="board" id="board">
 
@@ -25,6 +26,6 @@
         </div>
     </div>
     <button class="submit">ПОДТВЕРДИТЬ</button>
-    <script src="{{ url_for('static', filename='igra/igra.js') }}"></script>
+    <script src="{{ url_for('static', filename='igra_bot_mcts/igra_bot_mcts.js') }}"></script>
 </body>
 </html>

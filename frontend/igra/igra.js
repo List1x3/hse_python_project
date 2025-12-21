@@ -13,6 +13,7 @@ var gameon = 1;
 var spznak = [];
 var winscreen = document.querySelector(".winscreen");
 var wintext = document.querySelector(".wintext");
+var text_main = document.querySelector("h1");
 
 function createGrid(n) {
     const board = document.querySelector('.board');
@@ -187,7 +188,7 @@ function finish_hod(){
             // setTimeout(final_showdown(), 300 + 300 * sp.length);
         }
         else if(left_zones == 0){
-            wintext .textContent = "НИЧЬЯ";
+            wintext.textContent = "НИЧЬЯ";
             final_showdown();
             // setTimeout(final_showdown(), 300 + 300 * sp.length);
         }
@@ -195,11 +196,13 @@ function finish_hod(){
             nowx = -1;
             nowy = -1;
             if(now == 1){
+                text_main.textContent = "Ход О"
                 now = 2;
                 nowzn = "O";
                 now_color = "#42aaff";
             }
             else{
+                text_main.textContent = "Ход X"
                 now = 1;
                 now_color = "#FF5722";
                 nowzn = "X";
