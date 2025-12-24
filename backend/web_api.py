@@ -3,12 +3,13 @@ import random
 import os
 import shutil
 from pathlib import Path
+from typing import Dict, List, Tuple, Optional, Any, Union
 from ai.q_learning.q_agent import QAgent
 from core.board import Board
 from ai.mcts.mcts_agent import MCTSAgent
 
 # app = Flask(__name__)
-_cache = {}  # кеш загруженных моделей
+_cache: Dict[str, QAgent] = {}  # кеш загруженных моделей
 
 bp = Blueprint('api', __name__)
 
@@ -36,7 +37,7 @@ def get_models_dir() -> Path:
     return proj_root / "ai" / "models" / "q_learning"
 
 
-def prepare_models_for_web():
+def prepare_models_for_web() -> bool:
     # создать копии моделей без _final
     models_dir = get_models_dir()
 
@@ -58,7 +59,7 @@ def prepare_models_for_web():
             new_path = models_dir / f"{new_name}.pkl"
 
             if not new_path.exists():
-                shutil.copy2(file, new_path)
+                shutil.copy2(str(file), str(new_path))
                 print(f"Создана копия: {new_name}.pkl")
                 created += 1
 
@@ -66,7 +67,7 @@ def prepare_models_for_web():
     return created > 0
 
 
-def win_len(sz):
+def win_len(sz: int) -> int:
     # длина для победы
     if sz == 3:
         return 3
@@ -79,7 +80,7 @@ def win_len(sz):
 
 
 @bp.route('/ai/move', methods=['POST'])
-def ai_move():
+def ai_move() -> Tuple[Union[jsonify, Dict[str, Any]], int]:
     # получить ход от ИИ
     data = request.json
 
@@ -87,11 +88,11 @@ def ai_move():
     if not data:
         return jsonify({'error': 'нет данных'}), 400
 
-    board = data.get('board')
+    board: Optional[List[List[str]]] = data.get('board')
     print(board)
-    size = data.get('size')
+    size: Optional[int] = data.get('size')
     print(size)
-    symbol = data.get('symbol')
+    symbol: Optional[str] = data.get('symbol')
     print(symbol)
 
     # валидация полей
@@ -144,18 +145,18 @@ def ai_move():
         # получение хода
         info = agent.get_move(board_obj, symbol)
 
-        if info['action']:
+        if info.get('action'):
             return jsonify({
-                'row': info['r'], 
-                'col': info['c'], 
+                'row': info['r'],
+                'col': info['c'],
                 'r': info['r'],
                 'c': info['c'],
                 'confidence': info['conf'],
                 'q_value': info['val']
-            })
+            }), 200
 
     # случайный ход если нет модели
-    moves = []
+    moves: List[Tuple[int, int]] = []
     for r in range(size):
         for c in range(size):
             if board[r][c] == ' ':
@@ -169,15 +170,15 @@ def ai_move():
             'r': move[0],
             'c': move[1],
             'confidence': 0.0
-        })
+        }), 200
 
     return jsonify({'error': 'нет ходов'}), 400
 
 
 @bp.route('/ai/models', methods=['GET'])
-def list_models():
+def list_models() -> Tuple[jsonify, int]:
     # список доступных моделей
-    models = []
+    models: List[Dict[str, Any]] = []
 
     for size in range(3, 16):
         wl = win_len(size)
@@ -198,56 +199,56 @@ def list_models():
                 'has_model': has_model
             })
 
-    return jsonify({'models': models})
+    return jsonify({'models': models}), 200
 
 
 @bp.route('/ai/health', methods=['GET'])
-def health():
+def health() -> Tuple[jsonify, int]:
     # проверка работы сервера
-    return jsonify({'status': 'ok', 'cache_size': len(_cache)})
+    return jsonify({'status': 'ok', 'cache_size': len(_cache)}), 200
 
 
 @bp.route('/ai/clear_cache', methods=['POST'])
-def clear_cache():
+def clear_cache() -> Tuple[jsonify, int]:
     # очистить кеш моделей
     _cache.clear()
-    return jsonify({'status': 'cache cleared'})
+    return jsonify({'status': 'cache cleared'}), 200
 
 
 @bp.route('/ai/prepare_models', methods=['POST'])
-def prepare_models():
+def prepare_models() -> Tuple[jsonify, int]:
     # подготовить модели для веб-сервера
     try:
         result = prepare_models_for_web()
-        return jsonify({'status': 'success', 'prepared': result})
+        return jsonify({'status': 'success', 'prepared': result}), 200
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
 
 @bp.route('/ai/mcts_move', methods=['POST'])
-def mcts_move():
+def mcts_move() -> Tuple[jsonify, int]:
     data = request.json
-    
+
     # проверка данных
     if not data:
         return jsonify({'err': 'нет данных'}), 400
-    
-    board_state = data.get('board')
-    size = data.get('size')
-    symbol = data.get('symbol')
-    
+
+    board_state: Optional[List[List[str]]] = data.get('board')
+    size: Optional[int] = data.get('size')
+    symbol: Optional[str] = data.get('symbol')
+
     # валидация
     if not board_state or not size or not symbol:
         return jsonify({'err': 'нужны board, size, symbol'}), 400
-    
+
     if size < 3 or size > 15:
         return jsonify({'err': 'size от 3 до 15'}), 400
-    
+
     if symbol not in ['X', 'O']:
         return jsonify({'err': 'symbol X или O'}), 400
-    
+
     wl = win_len(size)
-    
+
     # агент
     agent = MCTSAgent(
         size=size,
@@ -255,10 +256,10 @@ def mcts_move():
         sym=symbol,
         sims=1500  # точность
     )
-    
+
     # создать доску
     board = Board(size, wl)
-    
+
     # заполнить доску
     for r in range(size):
         for c in range(size):
@@ -267,14 +268,14 @@ def mcts_move():
                 board.move(r, c, 'X')
             elif cell == 'O':
                 board.move(r, c, 'O')
-    
+
     # ход
     move_info = agent.get_move(board, symbol)
 
     if move_info:
         row = move_info.get('row') or move_info.get('r')
         col = move_info.get('col') or move_info.get('c')
-        
+
         if row is not None and col is not None:
             response = {
                 'row': row,
@@ -283,15 +284,15 @@ def mcts_move():
                 'c': col,
                 'conf': move_info.get('conf', 0.0)
             }
-            return jsonify(response)
-    
+            return jsonify(response), 200
+
     # резервный случайный ход
-    moves = []
+    moves: List[Tuple[int, int]] = []
     for r in range(size):
         for c in range(size):
             if board_state[r][c] == ' ':
                 moves.append((r, c))
-    
+
     if moves:
         mv = random.choice(moves)
         return jsonify({
@@ -300,6 +301,6 @@ def mcts_move():
             'r': mv[0],
             'c': mv[1],
             'conf': 0.0
-        })
-    
+        }), 200
+
     return jsonify({'err': 'нет ходов'}), 400
