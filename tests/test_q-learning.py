@@ -102,8 +102,12 @@ class TestQ:
             r, c = a
             b.move(r, c, 'O')
             
-            # случайный ответный ход
-            if not b.is_game_over():
+            # закончилась ли игра
+            winner = b.get_winner()
+            board_full = b.is_full()
+            
+            # Если игра не закончилась
+            if winner is None and not board_full:
                 empty_cells = [
                     (rr, cc) for rr in range(size) 
                     for cc in range(size) if b.is_valid(rr, cc)
