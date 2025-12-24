@@ -2,11 +2,10 @@ import pytest
 import random
 from pathlib import Path
 import sys
-from ai.q_learning.q_agent import QAgent
-from core.board import Board
-
 root = Path(__file__).parent.parent
 sys.path.insert(0, str(root))
+from ai.q_learning.q_agent import QAgent
+from core.board import Board
 
 class TestQ:
     # тесты
