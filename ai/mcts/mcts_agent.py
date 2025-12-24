@@ -1,7 +1,6 @@
 import numpy as np
 import random
 import math
-from collections import defaultdict
 from typing import List, Tuple, Dict, Optional
 from core.board import Board
 

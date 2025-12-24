@@ -1,0 +1,6 @@
+.git/
+.gitignore
+__pyache__/
+.pytest_cache/
+Dockerfile
+.dockerignore
