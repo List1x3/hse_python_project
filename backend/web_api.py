@@ -36,7 +36,7 @@ def get_models_dir() -> Path:
 
 
 def prepare_models_for_web():
-    # создать копии моделей без _final
+    # создать копии моделей
     models_dir = get_models_dir()
 
     if not models_dir.exists():
@@ -52,7 +52,6 @@ def prepare_models_for_web():
 
         # если это финальная модель
         if name.endswith('_final'):
-            # имя без _final
             new_name = name.replace('_final', '')
             new_path = models_dir / f"{new_name}.pkl"
 
