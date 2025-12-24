@@ -12,17 +12,14 @@ sys.path.insert(0, str(root))
 from ai.mcts.mcts_agent import MCTSAgent
 from core.board import Board
 
-
 class TestMCTS:
-    # тесты
-    
     @pytest.mark.parametrize("size,win_len", [
-        (5, 4),
-        (6, 5),
-        (7, 5),
-        (8, 5),
-        (9, 5),
-        (10, 5),
+        (5, 4),  
+        (6, 5),  
+        (7, 5),  
+        (8, 5),  
+        (9, 5),  
+        (10, 5), 
     ])
     def test_mcts_create(self, size, win_len):
         # создать агента для размера
@@ -33,12 +30,12 @@ class TestMCTS:
         assert ag.sims == 50
     
     @pytest.mark.parametrize("size,win_len", [
-        (5, 4),
-        (6, 5),
-        (7, 5),
+        (5, 4),  
+        (6, 5),  
+        (7, 5),  
         (8, 5),  
-        (9, 5),
-        (10, 5),
+        (9, 5),  
+        (10, 5), 
     ])
     def test_mcts_empty(self, size, win_len):
         # тест с пустой доской
@@ -56,12 +53,12 @@ class TestMCTS:
             assert b.is_valid(row, col)
     
     @pytest.mark.parametrize("size,win_len", [
-        (5, 4),
-        (6, 5),
-        (7, 5),
-        (8, 5),
-        (9, 5),
-        (10, 5),
+        (5, 4),  
+        (6, 5),  
+        (7, 5),  
+        (8, 5),  
+        (9, 5),  
+        (10, 5), 
     ])
     def test_mcts_partial(self, size, win_len):
         # тест с частично заполненной доской
@@ -81,9 +78,9 @@ class TestMCTS:
             assert b.is_valid(row, col)
     
     @pytest.mark.parametrize("size,win_len", [
-        (5, 4),
-        (8, 5),
-        (10, 5),
+        (5, 4),  
+        (8, 5),  
+        (10, 5), 
     ])
     def test_mcts_center(self, size, win_len):
         # тест с ходами в центре
@@ -104,8 +101,8 @@ class TestMCTS:
             assert b.is_valid(row, col)
     
     @pytest.mark.parametrize("size,win_len", [
-        (6, 5),
-        (9, 5),
+        (6, 5),  
+        (9, 5),  
     ])
     def test_mcts_corner(self, size, win_len):
         # тест с ходами в углу
@@ -125,8 +122,8 @@ class TestMCTS:
             assert b.is_valid(row, col)
     
     @pytest.mark.parametrize("size,win_len", [
-        (7, 5),
-        (10, 5),
+        (7, 5),  
+        (10, 5), 
     ])
     def test_mcts_almost_win(self, size, win_len):
         # тест с почти выигрышной позицией
@@ -146,8 +143,8 @@ class TestMCTS:
             assert b.is_valid(row, col)
     
     @pytest.mark.parametrize("size,win_len", [
-        (5, 4),
-        (8, 5),
+        (5, 4),  
+        (8, 5),  
     ])
     def test_mcts_block(self, size, win_len):
         # тест с блокировкой противника
@@ -167,9 +164,9 @@ class TestMCTS:
             assert b.is_valid(row, col)
     
     @pytest.mark.parametrize("size,win_len", [
-        (6, 5),
-        (9, 5),
-        (10, 5),
+        (6, 5),  
+        (9, 5),  
+        (10, 5), 
     ])
     def test_mcts_speed(self, size, win_len):
         # тест скорости
@@ -190,8 +187,8 @@ class TestMCTS:
     
     @pytest.mark.parametrize("size,win_len", [
         (5, 4),
-        (7, 5),
-        (10, 5),
+        (7, 5),  
+        (10, 5), 
     ])
     def test_mcts_tree_grow(self, size, win_len):
         # рост дерева
@@ -213,9 +210,9 @@ class TestMCTS:
         assert s3 >= s2
     
     @pytest.mark.parametrize("size,win_len", [
-        (5, 4),
-        (8, 5),
-        (10, 5),
+        (5, 4),  
+        (8, 5),  
+        (10, 5), 
     ])
     def test_mcts_reset(self, size, win_len):
         # сброс дерева
@@ -239,8 +236,8 @@ class TestMCTS:
             assert b.is_valid(row, col)
     
     @pytest.mark.parametrize("size,win_len", [
-        (6, 5),
-        (9, 5),
+        (6, 5),  
+        (9, 5),  
     ])
     def test_mcts_conf(self, size, win_len):
         # уверенность агента
@@ -253,11 +250,10 @@ class TestMCTS:
             assert 0 <= c <= 1
     
     @pytest.mark.parametrize("size,win_len", [
-        (7, 5),
-        (10, 5),
+        (7, 5),  
+        (10, 5), 
     ])
     def test_mcts_vs_random(self, size, win_len):
-        # сравнение mcts и random
         ag = MCTSAgent(size=size, win_len=win_len, sym='X', sims=30)
         b = Board(size=size, win_len=win_len)
         
@@ -266,19 +262,40 @@ class TestMCTS:
         m = ag.get_move(b, 'X')
         t2 = time.time()
         mt = t2 - t1
-        
-        # random
         t1 = time.time()
-        ms = b.get_valid_moves()
-        rm = random.choice(ms) if ms else None
+        empty_cells = []
+        for r in range(size):
+            for c in range(size):
+                if b.is_valid(r, c):
+                    empty_cells.append((r, c))
         t2 = time.time()
         rt = t2 - t1
         
         # mcts должен думать дольше
         assert mt > rt
         
-        # оба валидны
+        # проверка mcts
         if m.get('action'):
             row = m.get('row', m.get('r', -1))
             col = m.get('col', m.get('c', -1))
             assert b.is_valid(row, col)
+    
+    @pytest.mark.parametrize("size,win_len", [
+        (7, 5),  
+        (10, 5), 
+    ])
+    def test_mcts_vs_random_fixed(self, size, win_len):
+        ag = MCTSAgent(size=size, win_len=win_len, sym='X', sims=30)
+        b = Board(size=size, win_len=win_len)
+        t1 = time.time()
+        m = ag.get_move(b, 'X')
+        t2 = time.time()
+        
+        # mcts дает валидный ход
+        if m.get('action'):
+            row = m.get('row', m.get('r', -1))
+            col = m.get('col', m.get('c', -1))
+            assert b.is_valid(row, col)
+        
+        # время не слишком большое
+        assert t2 - t1 < 10.0
