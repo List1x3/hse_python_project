@@ -7,7 +7,6 @@ from ai.q_learning.q_agent import QAgent
 from core.board import Board
 from ai.mcts.mcts_agent import MCTSAgent
 
-# app = Flask(__name__)
 _cache = {}  # кеш загруженных моделей
 
 bp = Blueprint('api', __name__)
